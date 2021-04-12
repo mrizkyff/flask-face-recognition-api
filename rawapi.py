@@ -28,8 +28,8 @@ def upload_file():
 
 		if request.files['img']:
 			f = request.files['img']
-			f.save(secure_filename(f.filename))
-			return perhitungan_face_recognition()
+			# f.save(secure_filename(f.filename))
+			return perhitungan_face_recognition(f)
 		else:
 			return jsonify("file kosong boy!")
 		
@@ -37,17 +37,17 @@ def upload_file():
 	elif request.method == 'GET':
 		return jsonify('halo am get!')
 
-def perhitungan_face_recognition():
+def perhitungan_face_recognition(file_stream):
 	face_found = False
 	identified = False
-	diff = 0.0
+	diff = 1.0
 
 	# image yang dikenali
-	known_image = face_recognition.load_image_file('profile.png')
+	known_image = face_recognition.load_image_file('ian_pas.png')
 	known_image_encoding = face_recognition.face_encodings(known_image)[0]
 
 	# image yang akan diuji
-	unknown_image = face_recognition.load_image_file('img.jpg')
+	unknown_image = face_recognition.load_image_file(file_stream)
 	unknown_image_encoding = face_recognition.face_encodings(unknown_image)[0]
 
 	if len(unknown_image_encoding) > 0:
@@ -55,7 +55,7 @@ def perhitungan_face_recognition():
 		# cek kecocokan
 		match_result = face_recognition.compare_faces([known_image_encoding], unknown_image_encoding)
 		# hitung jarak / perbedaan
-		diff = face_recognition.face_distance([known_image_encoding], unknown_image_encoding)
+		diff = diff-(face_recognition.face_distance([known_image_encoding], unknown_image_encoding))
 
 		if match_result[0]:
 			identified = True
